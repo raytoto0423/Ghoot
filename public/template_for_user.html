@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>template_for_user</title>
+    <link rel="stylesheet" href="stylesheet_hwang/style_user.css">
+    <script>
+    let wss
+    window.onload = () => {
+        const ws = new WebSocket('ws://192.168.1.7:8001');
+
+        ws.onopen = () => {
+            console.log('WebSocket connection established');
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.action === 'redirect' && data.url) {
+                window.location.href = data.url;
+            }
+        };
+
+        ws.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
+
+        wss = ws;
+    };
+    </script>
+</head>
+<script>
+
+</script>
+<body>
+<div class="background">
+    <div class="blue-section"></div>
+    <div class="red-section"></div>
+    <button class="choice" id="choice1">Choice1</button>
+    <img alt="versus" src="stylesheet_hwang/giphy.webp" id="versus">
+    <button class="choice" id="choice2">Choice2</button>
+</div>
+<script>
+    const cookieValue = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('USER='))
+    ?.split('=')[1];
+
+    document.getElementById('choice1').addEventListener('click', () => {
+        wss.send({ action: vote, num: 1, acc: cookieValue})
+    })
+</script>
+</body>
+</html>
